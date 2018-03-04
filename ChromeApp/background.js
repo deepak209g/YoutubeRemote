@@ -27,6 +27,9 @@ chrome.app.runtime.onLaunched.addListener(function () {
         webview.setAttribute('src', url)
       })
       console.log(webview.contentWindow)
+
+      // handle
+      createdWindow.contentWindow.beginServer(webview)
       
       
       webview.addEventListener("contentload", function () {

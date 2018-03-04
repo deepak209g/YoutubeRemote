@@ -11,7 +11,8 @@
     }
   },
   "permissions": [
-    "webview"
+    "webview",
+    "system.network"
   ],
   "sockets": {
     "tcp": {

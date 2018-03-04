@@ -501,6 +501,16 @@ var http = function() {
         }
         this.write_(data);
       },
+      
+
+      writeJSON: function(data){
+        var strdata = JSON.stringify(data);
+        this.writeHead(200, {
+          'Content-Type': 'application/json',
+          'Content-Length': strdata.length,
+          'Access-Control-Allow-Origin': '*'});
+        this.end(strdata)
+      },
     
       /**
        * Finishes the HTTP response writing |data| before closing.
@@ -539,7 +549,8 @@ var http = function() {
             contentLength = (this.response && this.response.byteLength) || 0;
           t.writeHead(this.status, {
             'Content-Type': type,
-            'Content-Length': contentLength});
+            'Content-Length': contentLength,
+            'Access-Control-Allow-Origin': '*'});
           t.end(this.response);
         };
         xhr.open('GET', url, true);

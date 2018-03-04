@@ -6,11 +6,15 @@ function receiveMessage(event){
     console.log(event)
     var data = event.data;
     var command = data['command']
-    if(command == 'NEXT_SONG'){
+    if(command == 'SONG_NEXT'){
         next_song()
     }else if(command == 'CHANGE_VOLUME'){
         var value = data['value'];
         change_volume(value);
+    }else if(command == 'SONG_PLAY'){
+        play_song()
+    }else if(command == 'SONG_PAUSE'){
+        pause_song()
     }
 }
 
@@ -22,7 +26,19 @@ function get_next_button(){
     return document.getElementsByClassName("ytp-next-button")[0];
 }
 
+function get_play_pause_button(){
+    return document.getElementsByClassName("ytp-play-button")[0];
+}
 
+function play_song(){
+    var play = get_play_pause_button();
+    play.click();
+}
+
+function pause_song(){
+    var pause = get_play_pause_button();
+    pause.click();
+}
 
 // change volume
 function change_volume(vol){
