@@ -6,7 +6,7 @@ function $(id) {
     $('log').value += text + '\n';
   }
   
-  var port = 9999;
+  var port = 5555;
   var isServer = false;
   if (http.Server && http.WebSocketServer) {
     // Listen for HTTP connections.
@@ -52,3 +52,12 @@ function $(id) {
       return true;
     });
   }
+
+  
+
+  // Qr code generation logic
+  var qr = new QRious({
+    element: document.getElementById('qr-canvas'),
+    value: 'https://github.com/neocotic/qrious',
+    size: 300
+  });

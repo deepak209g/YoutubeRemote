@@ -1,15 +1,67 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <script src="js/http.js"></script>
-    <script src="js/index.js"></script>
-  </head>
-  <body>
-    <div>
-      alskdfj 
-      asdf 
-      asdfkh
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <ul class="nav nav-tabs col align-self-center" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="pill" href="#connect" role="tab">Connect</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="pill" href="#youtube" role="tab">Youtube</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="pill" href="#settings" role="tab">Settings</a>
+        </li>
+      </ul>
     </div>
-    <webview id="webview" src="https://www.youtube.com/" style="width:640px; height:480px"></webview>
-  </body>
-</html>
+
+    <!-- Tab panes -->
+  </div>
+  <!-- Nav tabs -->
+  <div class="tab-content">
+    <div class="tab-pane active" id="connect" role="tabpanel">
+      <!-- qr code goes here -->
+      <div class="container">
+          <h2 style="text-align:center">Scan QR-Code to connect</h2>
+          <canvas id='qr-canvas' ></canvas>
+      </div>
+
+    </div>
+    <div class="tab-pane" id="youtube" role="tabpanel">
+      <!-- youtube webview goes here -->
+      <webview id="webview" src="https://www.youtube.com/" style="width:100%; height:100%"></webview>
+
+    </div>
+    <div class="tab-pane" id="settings" role="tabpanel">
+      <!-- settings goes here -->
+      <div>
+        <button id="next">Next</button>
+        <input type="text" name="song" id="song">
+        <button id="play">Play</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- jQuery first, then Tether, then Bootstrap JS. -->
+  <script src="js/jquery.min.js"></script>
+  <script src="js/tether.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/qrious.js"></script>
+  <script src="js/http.js"></script>
+  <script src="js/index.js"></script>
+</body>
