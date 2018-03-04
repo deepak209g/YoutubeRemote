@@ -125,7 +125,8 @@
             },
             methods:{
                 beginCapture(){
-                    capture = true
+                    capture = true;
+                    requestAnimationFrame(tick)
                 }
             }
         })
