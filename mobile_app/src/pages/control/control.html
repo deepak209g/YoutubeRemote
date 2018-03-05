@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Control
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+        <ion-item>
+            <ion-range [(ngModel)]="volume" (ionChange)="notifyVolumeChange()" debounce="100">
+              <ion-icon range-left small name="volume-off"></ion-icon>
+              <ion-icon range-right name="volume-up"></ion-icon>
+            </ion-range>
+          </ion-item>
+    </ion-row>
+    <ion-row text-center>
+      <ion-col>
+        <button ion-button color="light" icon-start (click)="playPrev()">
+          <ion-icon name='arrow-back'></ion-icon>
+        </button>
+      </ion-col>
+      <ion-col>
+        <button ion-button color='light' icon-center (click)="playPause()">
+          <ion-icon [name]="playicon"></ion-icon>
+        </button>
+      </ion-col>
+      <ion-col>
+
+        <button ion-button color="light" (click)="playNext()">
+          <ion-icon name='arrow-forward'></ion-icon>
+        </button>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

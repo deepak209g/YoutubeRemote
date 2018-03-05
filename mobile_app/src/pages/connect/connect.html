@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Connect</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  
+  <ion-item>
+    <ion-label>Enter IP</ion-label>
+    <ion-input [(ngModel)]="myip" type="text"></ion-input>
+  </ion-item>
+
+  <div padding>
+    <button ion-button color="primary" block (click)="connectToIP()">Connect</button>
+</div>
+</ion-content>
