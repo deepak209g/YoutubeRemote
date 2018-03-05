@@ -24,15 +24,27 @@ chrome.app.runtime.onLaunched.addListener(function () {
       play.addEventListener('click', function () {
         var url = song_text.value;
         console.log(url)
-        webview.setAttribute('src', url)
+        get_search_result_data(url)
+        // webview.setAttribute('src', url)
       })
       console.log(webview.contentWindow)
 
       // handle
       createdWindow.contentWindow.beginServer(webview)
-      
-      
+
+
+      webview.addEventListener("loadstart", function () {
+        console.log(new Date().getTime())
+      })
+
+
+      webview.addEventListener("loadstop", function () {
+        webview.contentWindow.postMessage({
+          'command': 'QUERY_DATA'
+        }, 'https://www.youtube.com/')
+      })
       webview.addEventListener("contentload", function () {
+        console.log(new Date().getTime())
         console.log(webview)
 
         webview.executeScript({ file: "content_script.js" }, function (result) { });
@@ -43,15 +55,14 @@ chrome.app.runtime.onLaunched.addListener(function () {
           }, 'https://www.youtube.com/')
         })
 
-        chrome.runtime.onMessage.addListener(
-          function (request, sender, sendResponse) {
-            console.log(request)
-          });
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+          console.log(request)
+        });
 
       });
 
 
-      webview.addEventListener('permissionrequest', function(e) {
+      webview.addEventListener('permissionrequest', function (e) {
         if (e.permission === 'fullscreen') {
           e.request.allow();
         }
@@ -60,3 +71,5 @@ chrome.app.runtime.onLaunched.addListener(function () {
   })
 
 })
+
+

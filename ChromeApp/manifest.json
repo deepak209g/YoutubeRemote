@@ -12,7 +12,8 @@
   },
   "permissions": [
     "webview",
-    "system.network"
+    "system.network",
+    "https://www.youtube.com/"
   ],
   "sockets": {
     "tcp": {

@@ -6,6 +6,7 @@ function log(text) {
   $('log').value += text + '\n';
 }
 
+var got_search_data;
 
 function beginServer(webview) {
   console.log('beginning server')
@@ -55,6 +56,16 @@ function beginServer(webview) {
         }, 'https://www.youtube.com/')
         req.writeJSON({ 'served': true })
         return true
+      } else if (url.startsWith('/search')) {
+        // search for a song
+        // first update src of webview to searchquery
+        var query = url.split('?')[1]
+        // webview.setAttribute('src', 'https://www.youtube.com/results?search_query=' + query)
+        var url = 'https://www.youtube.com/results?search_query=' + query;
+        get_search_result_data(url, function(songdata){
+          req.writeJSON(songdata);
+        })
+
       }
       // Serve the pages of this chrome application.
       req.serveUrl(url);
@@ -103,3 +114,78 @@ chrome.system.network.getNetworkInterfaces(function (interfaces) {
   ips = ips.reverse()
   ipdiv.innerHTML = ips.join('')
 });
+
+
+
+function get_search_result_data(loc, callback) {
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", loc, true);
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState == 4) {
+      // WARNING! Might be evaluating an evil script!
+      // var resp = eval(xhr.responseText);
+      // console.log(xhr.responseText)
+      parser = new DOMParser();
+      doc = parser.parseFromString(xhr.responseText, "text/html");
+      var scripts = doc.getElementsByTagName('script')
+      for (var e in scripts) {
+        var script = scripts[e]
+        // console.log(script.innerHTML)
+        if(script.innerHTML.indexOf('window["ytInitialData"]') > 0){
+          // var data = eval(script.innerHTML);
+          var scr = script.innerHTML;
+          var lines = scr.split(';')
+          var json = lines[0]
+          var firstbrac = json.indexOf('{')
+          var json = json.substr(firstbrac - 1)
+          json = JSON.parse(json)
+          var songdata = song_data_from_json(json)
+          callback(songdata);
+        }
+        // console.log(script.innerHTML.indexOf('window["ytInitialData"]') )
+
+      }
+    } else {
+      // console.log(err)
+    }
+  }
+  xhr.send();
+}
+
+
+function song_data_from_json(json){
+
+  // console.log(window)
+  var searchres = json.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0]
+
+  console.log(searchres)
+  var songs = searchres.itemSectionRenderer.contents
+      .map(function(e){
+          if(e.videoRenderer){
+              return e.videoRenderer
+          }
+      })
+
+      console.log(songs)
+  var songdata = songs.map(function (v) {
+      if (v) {
+          return {
+              'thumbnail': v.thumbnail.thumbnails[v.thumbnail.thumbnails.length - 1].url,
+              'url': `https://www.youtube.com/watch?v=${v.videoId}`,
+              'runtime': typeof v.thumbnailOverlays[0].thumbnailOverlayTimeStatusRenderer !== 'undefined' ? v.thumbnailOverlays[0].thumbnailOverlayTimeStatusRenderer.text.simpleText : typeof v.thumbnailOverlays[1].thumbnailOverlayTimeStatusRenderer !== 'undefined' ? v.thumbnailOverlays[1].thumbnailOverlayTimeStatusRenderer.text.simpleText : '',
+              'uploader': v.shortBylineText.runs[0].text,
+              'title': v.title.simpleText
+          }
+      }
+  })
+
+  songdata = songdata.filter(function (v) {
+      if (v) {
+          return true
+      }
+  })
+  console.log(songdata)
+
+  return songdata;
+}
