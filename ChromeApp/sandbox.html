@@ -1,0 +1,25 @@
+<html>
+
+<head>
+    <script>
+        window.addEventListener('message', function (event) {
+            var command = event.data.script;
+            // var d = document.createElement('script')
+            
+            // d.innerHTML = command
+            
+            var e = eval(command)
+            // document.appendChild(d)
+            console.log(window['ytInitialData'])
+            console.log(command)
+            // console.log(d)
+            event.source.postMessage({ 'result': window['ytInitialData'] }, event.origin);
+        })
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>

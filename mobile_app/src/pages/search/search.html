@@ -1,11 +1,24 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Connect
+      Search
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
+  <ion-item>
+    <ion-input placeholder="Search" [(ngModel)]="searchquery" type="text"></ion-input>
+    <button ion-button item-right (click)="fetchSearchResults()">
+      <ion-icon name="search"></ion-icon>
+    </button>
+  </ion-item>
 
+  <ion-list>
+    <ion-list>
+      <button ion-item *ngFor="let item of songs" (click)="itemSelected(item)">
+        {{ item.title }}
+      </button>
+    </ion-list>
+  </ion-list>
 </ion-content>

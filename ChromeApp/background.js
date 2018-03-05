@@ -19,6 +19,8 @@ chrome.app.runtime.onLaunched.addListener(function () {
       var nextbutton = win.document.querySelector('#next');
       var play = $('#play')
       var song_text = $('#song')
+      var iframe = win.document.getElementById('theFrame');
+
 
 
       play.addEventListener('click', function () {
@@ -30,7 +32,7 @@ chrome.app.runtime.onLaunched.addListener(function () {
       console.log(webview.contentWindow)
 
       // handle
-      createdWindow.contentWindow.beginServer(webview)
+      createdWindow.contentWindow.beginServer(webview, iframe)
 
 
       webview.addEventListener("loadstart", function () {
