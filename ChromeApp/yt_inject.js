@@ -44,13 +44,17 @@ function get_play_pause_button() {
 }
 
 function play_song() {
-    var play = get_play_pause_button();
-    play.click();
+    // var play = get_play_pause_button();
+    // play.click();
+    var video = get_video_element();
+    video.play();
 }
 
 function pause_song() {
-    var pause = get_play_pause_button();
-    pause.click();
+    // var pause = get_play_pause_button();
+    var video = get_video_element();
+    video.pause();
+    // pause.click();
 }
 
 // change volume
