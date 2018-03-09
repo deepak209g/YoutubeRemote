@@ -1,11 +1,29 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Connect
+      Library
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-
+  <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+  <ion-list>
+    <ion-item-sliding *ngFor="let item of songs">
+      <!-- <ion-item> -->
+        <button ion-item  (click)="itemSelected(item)">
+          <ion-avatar item-start>
+            <img src="{{ item.thumbnail }}">
+          </ion-avatar>
+          {{ item.title }}
+        </button>
+      <!-- </ion-item> -->
+      <ion-item-options>
+        <button ion-button color="danger" icon-start (click)="removeSong(item)">
+          <ion-icon name="trash"></ion-icon>
+          Remove
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
 </ion-content>

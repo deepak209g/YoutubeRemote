@@ -1,21 +1,28 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Control
+      Player
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 
 <ion-content padding>
+  <ion-thumbnail item-start>
+    <img src="{{current_song.thumbnail}}" width="100%">
+  </ion-thumbnail>
+
   <ion-grid>
+    <ion-row text-center>
+      <h2 style="text-align: center; width: 100%">{{current_song.title}}</h2>
+    </ion-row>
     <ion-row>
-        <ion-item>
-            <ion-range [(ngModel)]="volume" (ionChange)="notifyVolumeChange()" debounce="100">
-              <ion-icon range-left small name="volume-off"></ion-icon>
-              <ion-icon range-right name="volume-up"></ion-icon>
-            </ion-range>
-          </ion-item>
+      <ion-item>
+        <ion-range [(ngModel)]="volume" (ionChange)="notifyVolumeChange()" debounce="100">
+          <ion-icon range-left small name="volume-off"></ion-icon>
+          <ion-icon range-right name="volume-up"></ion-icon>
+        </ion-range>
+      </ion-item>
     </ion-row>
     <ion-row text-center>
       <ion-col>
@@ -37,4 +44,5 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+  <button ion-button round outline block style="margin-bottom: 50px" (click)="addRemoveSong()" *ngIf="current_song.title != 'Music'">{{buttontext}}</button>
 </ion-content>

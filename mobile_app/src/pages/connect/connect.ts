@@ -5,6 +5,8 @@ import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { ControlPage } from '../control/control';
 import { AlertController } from 'ionic-angular';
+import {GlobalProvider} from '../../providers/global/global'
+import { SongsPage } from '../songs/songs';
 
 @Component({
   selector: 'page-connect',
@@ -12,8 +14,9 @@ import { AlertController } from 'ionic-angular';
 })
 export class ConnectPage {
   public myip
-  constructor(public navCtrl: NavController, private http: Http, private storage: Storage, public alertCtrl: AlertController) {
-    this.myip = '192.168.31.33:5555'
+  constructor(public navCtrl: NavController, private http: Http, private storage: Storage, public alertCtrl: AlertController, private global: GlobalProvider) {
+    this.myip = '';
+    this.global.myip = this.myip;
   }
 
   connectToIP() {
@@ -28,13 +31,14 @@ export class ConnectPage {
 
         // this.showAlert(data)
         if(data['available'] == true){
-          this.storage.set('currentip', this.myip);
-          this.navCtrl.push(ControlPage, {
-              id: "123",
-              name: "Carl",
-              currentip: this.myip
-          });
-          // this.navCtrl.parent.select(2)
+          // this.storage.set('currentip', this.myip);
+          this.global.myip = this.myip
+          // this.navCtrl.push(SongsPage, {
+          //     id: "123",
+          //     name: "Carl",
+          //     currentip: this.myip
+          // });
+          this.navCtrl.parent.select(3)
         }
 
       }, err => {

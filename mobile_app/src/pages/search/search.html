@@ -14,11 +14,17 @@
     </button>
   </ion-item>
 
-  <ion-list>
+  <ion-item-group ion-item *ngFor="let item of results">
+    <ion-item-divider color="light">{{item.service}}</ion-item-divider>
     <ion-list>
-      <button ion-item *ngFor="let item of songs" (click)="itemSelected(item)">
+      <button ion-item *ngFor="let item of item.songs" (click)="itemSelected(item)">
+        <ion-avatar item-start>
+          <img src="{{ item.thumbnail }}">
+        </ion-avatar>
         {{ item.title }}
       </button>
     </ion-list>
-  </ion-list>
+  </ion-item-group>
+
+  
 </ion-content>

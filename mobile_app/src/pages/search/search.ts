@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { Storage } from '@ionic/storage';
+import { GlobalProvider } from '../../providers/global/global'
 
 @Component({
   selector: 'page-search',
@@ -10,12 +10,13 @@ import { Storage } from '@ionic/storage';
 })
 export class SearchPage {
   public searchquery = ''
-  public songs = [];
+  public results = [];
   private myip = ''
-  constructor(public navCtrl: NavController, private http: Http, private storage: Storage) {
-    storage.get('currentip').then((val) => {
-      this.myip = val;
-    });
+  constructor(public navCtrl: NavController, private http: Http, private global: GlobalProvider) {
+    // storage.get('currentip').then((val) => {
+    //   this.myip = val;
+    // });
+    this.myip = this.global.myip;
   }
 
   fetchSearchResults() {
@@ -29,7 +30,9 @@ export class SearchPage {
     this.http.get('http://' + this.myip + '/search?' + query)
       .subscribe(data => {
         let mydata = data.json()
-        this.songs = mydata
+        // console.log(mydata.length)
+        console.log(mydata)
+        this.results = mydata
       }, err => {
         console.log("Oops!");
         // this.showAlert(err)
@@ -39,12 +42,18 @@ export class SearchPage {
     console.log(item)
     this.http.get('http://' + this.myip + '/goto_song?' + item.url)
       .subscribe(data => {
-        // let mydata = data.json()
-        // this.songs = mydata
-        console.log(data)
+        this.global.update({ current_song: item });
+        this.global.play(null)
       }, err => {
         console.log("Oops!");
         // this.showAlert(err)
       })
+  }
+
+
+  ionViewWillEnter(){
+    console.log('will enter')
+   this.myip = this.global.myip;
+    
   }
 }
