@@ -104,7 +104,8 @@ export class GlobalProvider {
   add_song_to_library(song){
     console.log('added songs to library')
     if(this.song_index(song) == -1){
-      this.mysongs.push(song);
+      let newcopy = this.clone(song)
+      this.mysongs.push(newcopy);
       this.storage.set('mysongs', this.mysongs)
       // get('mysongs')
       
@@ -130,4 +131,10 @@ export class GlobalProvider {
     return -1;
   }
 
+  private clone = function(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  };
+  
+
 }
+

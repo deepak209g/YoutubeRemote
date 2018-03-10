@@ -119,6 +119,8 @@ chrome.app.runtime.onLaunched.addListener(function () {
                 yt_webview: yt_webview,
                 sc_webview: sc_webview,
                 iframe: iframe,
+                yt_tab: win.document.querySelector('#youtube_pill'),
+                sc_tab: win.document.querySelector('#soundcloud_pill'),
                 client_id: client_id
               })
             }

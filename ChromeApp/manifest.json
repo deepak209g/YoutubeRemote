@@ -26,8 +26,8 @@
     }
   },
   "icons": {
-    "16": "icons/calculator-16.png",
-    "128": "icons/calculator-128.png"
+    "16": "icons/music-16.png",
+    "128": "icons/music-128.png"
   },
   "sandbox": {
     "pages": [

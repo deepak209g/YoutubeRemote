@@ -10,6 +10,15 @@ if (loc.indexOf('search_query') > 0) {
 }
 
 
+function get_current_song_info(){
+    
+}
+
+function send_data_to_main_process(data) {
+    chrome.runtime.sendMessage(data);
+}
+
+
 window.addEventListener("message", receiveMessage, false);
 
 function receiveMessage(event) {
@@ -28,6 +37,12 @@ function receiveMessage(event) {
         play_song()
     } else if (command == 'SONG_PAUSE') {
         pause_song()
+    } else if (command == 'GET_SONG_INFO') {
+        let data = get_current_song_info();
+        send_data_to_main_process({
+            responding_to: command,
+            data: data
+        })
     }
 }
 

@@ -155,10 +155,9 @@ var SearchPage = (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'page-search',template:/*ion-inline-start:"D:\Projectos\YoutubeRemote\mobile_app\src\pages\search\search.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Search\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <ion-item>\n    <ion-input placeholder="Search" [(ngModel)]="searchquery" type="text"></ion-input>\n    <button ion-button item-right (click)="fetchSearchResults()">\n      <ion-icon name="search"></ion-icon>\n    </button>\n  </ion-item>\n\n  <ion-item-group ion-item *ngFor="let item of results">\n    <ion-item-divider color="light">{{item.service}}</ion-item-divider>\n    <ion-list>\n      <button ion-item *ngFor="let item of item.songs" (click)="itemSelected(item)">\n        <ion-avatar item-start>\n          <img src="{{ item.thumbnail }}">\n        </ion-avatar>\n        {{ item.title }}\n      </button>\n    </ion-list>\n  </ion-item-group>\n\n  \n</ion-content>'/*ion-inline-end:"D:\Projectos\YoutubeRemote\mobile_app\src\pages\search\search.html"*/
         }),
-        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_http__["a" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_http__["a" /* Http */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__providers_global_global__["a" /* GlobalProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__providers_global_global__["a" /* GlobalProvider */]) === "function" && _c || Object])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */], __WEBPACK_IMPORTED_MODULE_2__angular_http__["a" /* Http */], __WEBPACK_IMPORTED_MODULE_4__providers_global_global__["a" /* GlobalProvider */]])
     ], SearchPage);
     return SearchPage;
-    var _a, _b, _c;
 }());
 
 //# sourceMappingURL=search.js.map
@@ -277,11 +276,23 @@ var ControlPage = (function () {
         }
     };
     ControlPage.prototype.ionViewWillEnter = function () {
+        var _this = this;
         console.log('will enter');
         this.updateButtonText();
         this.playicon = this.global.playicon;
         this.playing = this.global.playing;
         this.myip = this.global.myip;
+        this.http.get('http://' + this.myip + '/get_current_song')
+            .subscribe(function (data) {
+            var mydata = data.json();
+            // console.log(mydata.length)
+            console.log(mydata);
+            _this.global.update({ current_song: mydata });
+            _this.updateButtonText();
+        }, function (err) {
+            console.log("Oops!");
+            // this.showAlert(err)
+        });
     };
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["D" /* Input */])(),
@@ -647,6 +658,9 @@ var GlobalProvider = (function () {
         this.storage = storage;
         this.mysongs = [];
         this.playicon = 'play';
+        this.clone = function (obj) {
+            return JSON.parse(JSON.stringify(obj));
+        };
         var mip = document.location.href;
         if (mip.indexOf('http://') >= 0) {
             mip = mip.substring(7, mip.length - 1);
@@ -724,7 +738,8 @@ var GlobalProvider = (function () {
     GlobalProvider.prototype.add_song_to_library = function (song) {
         console.log('added songs to library');
         if (this.song_index(song) == -1) {
-            this.mysongs.push(song);
+            var newcopy = this.clone(song);
+            this.mysongs.push(newcopy);
             this.storage.set('mysongs', this.mysongs);
             // get('mysongs')
         }

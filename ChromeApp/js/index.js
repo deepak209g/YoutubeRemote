@@ -8,14 +8,58 @@ function log(text) {
 }
 
 var got_search_data;
+const YOUTUBE = 'YOUTUBE';
+const SOUNDCLOUD = 'SOUNDCLOUD';
 
 function beginServer(args) {
+
+
+  function __get_meta_from_service(service) {
+    if (service == YOUTUBE) {
+      return {
+        service: service,
+        messaging_url: 'https://www.youtube.com/',
+        current_view: yt_webview
+      }
+    } else if (service == SOUNDCLOUD) {
+      return {
+        service: service,
+        messaging_url: '*',
+        current_view: sc_webview
+      }
+    }
+
+  }
+
+
+  function service_send_command(service, command, value) {
+    let data = __get_meta_from_service(service)
+    let tosend = {
+      'for': service,
+      'command': command
+    }
+    if (value != null) {
+      tosend.value = value
+    }
+    data.current_view.contentWindow.postMessage(tosend, data.messaging_url)
+  }
+
+  console.log(args)
   var yt_webview = args.yt_webview;
   var sc_webview = args.sc_webview;
   var iframe = args.iframe;
+  var yt_tab = args.yt_tab;
+  var sc_tab = args.sc_tab;
+  console.log(sc_tab)
   var client_id = args.client_id;
+  var current_service = null;
+  var current_view = null;
+  var yt_current_url = null;
+  var current_song_info = null;
+  messaging_url = null
   console.log('beginning server')
   console.log(iframe)
+  console.log(yt_webview)
   var port = 5555;
   var isServer = false;
   if (http.Server && http.WebSocketServer) {
@@ -35,33 +79,24 @@ function beginServer(args) {
         console.log('Writings dta')
         return true;
       } else if (url == '/play') {
-        yt_webview.contentWindow.postMessage({
-          'command': 'SONG_PLAY'
-        }, 'https://www.youtube.com/')
+        service_send_command(current_service, "SONG_PLAY", null);
         req.writeJSON({ 'served': true })
         return true;
       } else if (url == '/pause') {
-        yt_webview.contentWindow.postMessage({
-          'command': 'SONG_PAUSE'
-        }, 'https://www.youtube.com/')
+        service_send_command(current_service, "SONG_PAUSE", null)
         req.writeJSON({ 'served': true })
         return true;
       } else if (url == '/next') {
-        yt_webview.contentWindow.postMessage({
-          'command': 'SONG_NEXT'
-        }, 'https://www.youtube.com/')
+        service_send_command(current_service, "SONG_NEXT", null)
         req.writeJSON({ 'served': true })
         return true;
       } else if (url == '/prev') {
-        yt_webview.back();
+        current_view.back();
       } else if (url.startsWith('/volume')) {
         console.log(url)
         var volstr = url.split('?').reverse()[0]
         var vol = parseInt(volstr) / 100;
-        yt_webview.contentWindow.postMessage({
-          'command': 'CHANGE_VOLUME',
-          'value': vol
-        }, 'https://www.youtube.com/')
+        service_send_command(current_service, "CHANGE_VOLUME", vol)
         req.writeJSON({ 'served': true })
         return true
       } else if (url.startsWith('/search')) {
@@ -78,7 +113,7 @@ function beginServer(args) {
         }, '*')
         // search on youtube
         // first update src of webview to searchquery
-        
+
         var url = 'https://www.youtube.com/results?search_query=' + query;
         get_search_result_data(url, iframe, function (songdata) {
           var str = JSON.stringify(songdata)
@@ -107,14 +142,57 @@ function beginServer(args) {
       } else if (url.startsWith('/goto_song')) {
         let toks = url.split('?')
         let vidid = toks[1]
-        if(vidid.startsWith('https://soundcloud.com')){
+        if (vidid.startsWith('https://soundcloud.com')) {
+          sc_tab.click()
           // soundcloud link
-          sc_webview.setAttribute('src', vidid)
-        }else{
+          sc_webview.setAttribute('src', vidid);
+          current_service = SOUNDCLOUD
+          current_view = sc_webview
+          messaging_url = '*'
+          setTimeout(function () {
+            service_send_command(SOUNDCLOUD, 'SONG_PLAY', null)
+          }, 5000)
+          service_send_command(YOUTUBE, 'SONG_PAUSE', null)
+        } else {
           // youtube link
+          yt_tab.click()
           yt_webview.setAttribute('src', 'https://www.youtube.com/watch?v=' + vidid)
+          current_service = YOUTUBE
+          current_view = yt_webview
+          messaging_url = 'https://www.youtube.com/'
+
+          service_send_command(SOUNDCLOUD, 'SONG_PAUSE', null)
         }
         req.writeJSON({ 'served': true })
+        return true
+      } else if (url.startsWith('/get_current_song')) {
+        if (current_service == SOUNDCLOUD) {
+          service_send_command(current_service, 'GET_SONG_INFO', null)
+          global_song_info_req_obj = req;
+        } else if (current_service == YOUTUBE) {
+          let yt_src = yt_webview.getAttribute('src')
+          if (yt_current_url != yt_src) {
+            let src = yt_src.split('v=')[1]
+            console.log(src)
+            var url = 'https://www.youtube.com/results?search_query=' + src
+            let results = get_search_result_data(url, iframe, function (results) {
+              console.log(results)
+              var str = JSON.stringify(results[0])
+              str = escapeJSON(str)
+              songdata = JSON.parse(str)
+              console.log(songdata)
+              req.writeJSON(songdata)
+              yt_current_url = yt_src
+              current_song_info = songdata
+              console.log(current_song_info)
+            })
+          } else {
+            console.log(current_song_info)
+            req.writeJSON(current_song_info)
+          }
+
+
+        }
         return true
       }
       // Serve the pages of this chrome application.
@@ -133,6 +211,7 @@ function beginServer(args) {
       // When a message is received on one socket, rebroadcast it on all
       // connected sockets.
       socket.addEventListener('message', function (e) {
+        console.log(e.data)
         for (var i = 0; i < connectedSockets.length; i++)
           connectedSockets[i].send(e.data);
       });
@@ -288,6 +367,7 @@ var youtube_search = {
 }
 
 var global_search_req_obj = null;
+var global_song_info_req_obj = null;
 
 function server_handle_message_from_soundcloud(data) {
   console.log(data)
@@ -311,15 +391,32 @@ function server_handle_message_from_soundcloud(data) {
         global_search_req_obj = null
       }
       break
+    case 'GET_SONG_INFO':
+      let song_data = data.data;
+      song_data.thumbnail = song_data.thumbnail.replace('50x50', '500x500')
+      global_song_info_req_obj.writeJSON(song_data)
+      global_song_info_req_obj = null;
+      break;
+
     default:
       break;
   }
 }
 
 
-function server_handle_message_from_youtube(data){
+function server_handle_message_from_youtube(data) {
   console.log('message from youtube in index.js')
   console.log(data)
+  let resp_to = data.responding_to;
+  switch (resp_to) {
+    case 'GET_SONG_INFO':
+      let song_data = data.data;
+      global_song_info_req_obj.writeJSON(song_data)
+      global_song_info_req_obj = null;
+      break;
+    default:
+      break;
+  }
 }
 
 
