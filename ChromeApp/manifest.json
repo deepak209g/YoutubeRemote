@@ -1,6 +1,6 @@
 {
-  "name": "Hello World!",
-  "description": "My first Chrome App.",
+  "name": "Eargasm",
+  "description": "remote for us lazy folks.",
   "version": "0.1",
   "manifest_version": 2,
   "app": {
